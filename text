@@ -1,0 +1,89 @@
+// for securing the password use the package like --- 
+// 1 . npm i bcrypt
+// 2.  npm i jsonwebtoken
+
+
+// // lec - 9 
+//  in  which to get the database food_items 
+//  1. using mongoose.collection.db.collection("food_items")
+//  my name is the sdlkfjs
+
+
+
+ import React from "react";
+
+import { useEffect, useState } from "react";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import Card from "../components/Card";
+import Carousel from "../components/Carousel";
+
+
+
+export default function Home() {
+
+    const [foodCat, setFoodCat] = useState([]);
+    const [foodItem, setFoodItem] = useState([]);
+
+   
+    const loadData = async () => {
+        let response = await fetch("http://localhost:8000/api/foodData", {
+            method: "POST",
+            headers: {
+                'Content-Type':'application/json'
+            }
+        });
+
+        response = await response.json();
+       
+        setFoodCat(response[1]);
+        setFoodItem(response[0]);
+        console.log(response[0], response[1]);
+    }
+
+    useEffect(() => {
+        loadData();
+
+    }, [])
+
+
+
+    return (
+        <div>
+            <Navbar />
+
+            <div>  <Carousel /></div>
+
+            <div className="container">
+                {
+                    foodCat != [] ?
+                        foodCat.map((data) => {
+                            return (
+                                // eslint-disable-next-line react/jsx-key
+                                <div>
+                                    <div key={data._id}>
+                                        {data.CategoryName}
+                                    </div>
+                                    <hr></hr>
+                                    {
+                                        foodItem != [] ?
+                                            foodItem.filter((item) =>
+                                                data.CategoryName === item.CategoryName)
+                                                .map((filterItem) => {
+                                                    return (
+                                                        <div key={filterItem._id}>
+                                                            <Card />
+                                                        </div>
+                                                    )
+                                                }) : ""
+                                    }
+                                </div>
+                            )
+                        }) : ""
+                }
+            </div>
+            <Footer />
+
+        </div>
+    )
+} 
